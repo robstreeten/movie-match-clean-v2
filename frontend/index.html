@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Movie Matcher</title>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        background: #f9f9f9;
+      }
+      textarea {
+        width: 100%;
+        height: 80px;
+        margin-bottom: 10px;
+      }
+      #results {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Movie Matcher</h1>
+
+    <label>Search Term:</label>
+    <input type="text" id="searchTerm" placeholder="e.g. war, love, rebellion" />
+
+    <label>Movie Titles:</label>
+    <textarea id="movieTitles">The Prestige
+Titanic
+The Matrix
+The Dark Knight</textarea>
+
+    <button onclick="sendRequest()">Match Movies</button>
+
+    <div id="results"></div>
+
+    <script>
+      async function sendRequest() {
+        const searchTerm = document.getElementById("searchTerm").value;
+        const movieTitles = document.getElementById("movieTitles").value
+          .split("\n")
+          .filter(line => line.trim() !== "");
+
+        const res = await fetch("https://movie-match-clean.onrender.com/match-movies", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ search_term: searchTerm, movie_titles: movieTitles })
+        });
+
+        const data = await res.json();
+        document.getElementById("results").innerText = data.matches;
+      }
+    </script>
+  </body>
+</html>
 
