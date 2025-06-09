@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
@@ -10,15 +11,16 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = FastAPI()
 
+# Enable CORS for all origins (you can restrict this later)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # You can restrict to your frontend domain later
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Serve static files from /frontend
+# Serve the React build or HTML manually
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
@@ -53,7 +55,7 @@ Return your answer ONLY in this JSON format:
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
-        text = response.choices[0].message.content.strip()
-        return { "matches": text }
+        content = response.choices[0].message.content.strip()
+        return { "matches": content }
     except Exception as e:
         return JSONResponse(status_code=500, content={ "error": str(e) })
